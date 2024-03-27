@@ -1,6 +1,8 @@
+import java.util.Scanner;
+
 class TicTacToe
 {
-    char[][] board;
+    static char[][] board;
 
     public TicTacToe()
     {
@@ -34,7 +36,7 @@ class TicTacToe
         }
     }
 
-    void placeMark(int row, int col, char mark)
+    static void placeMark(int row, int col, char mark)
     {
         if (row >= 0 && row <= 2 && col >= 0 && col <=2)
         {
@@ -85,6 +87,44 @@ class TicTacToe
     }
 }
 
+
+class HumanPlayer
+{
+    String name;
+    char mark;
+
+    HumanPlayer(String name, char mark)
+    {
+        this.name = name;
+        this.mark = mark;
+    }
+
+    void makeMove()
+    {
+        Scanner sc = new Scanner(System.in);
+        int row,col;
+        do
+        {
+            System.out.println("Enter the Row and Column");
+            row = sc.nextInt();
+            col = sc.nextInt();
+        }while(!isValidMove(row,col));
+
+        TicTacToe.placeMark(row,col,mark);
+    }
+
+    boolean isValidMove(int row, int col)
+    {
+        if (row >= 0 && row <= 2 && col >= 0 && col <= 3)
+        {
+            if (TicTacToe.board[row][col] == ' ')
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+}
 
 public class Main {
     public static void main(String[] args) {
