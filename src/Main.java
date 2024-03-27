@@ -1,3 +1,4 @@
+import java.util.Random;
 import java.util.Scanner;
 
 class TicTacToe
@@ -21,7 +22,7 @@ class TicTacToe
         }
     }
 
-    void displayBoard()
+    static void displayBoard()
     {
         System.out.println("-------------");
         for (int i = 0; i < board.length; i++)
@@ -48,7 +49,7 @@ class TicTacToe
         }
     }
 
-    boolean checkColWin()
+    static boolean checkColWin()
     {
         for (int j = 0; j <= 2; j++)
         {
@@ -61,7 +62,7 @@ class TicTacToe
         return false;
     }
 
-    boolean checkRowWin()
+    static boolean checkRowWin()
     {
         for (int i = 0; i <= 2; i++)
         {
@@ -73,7 +74,7 @@ class TicTacToe
         return false;
     }
 
-    boolean checkDiagonalWin()
+    static boolean checkDiagonalWin()
     {
         if(board[0][0] != ' ' && board[0][0] == board[1][1] && board[1][1] == board[2][2] ||
                 board[0][2] != ' ' &&   board[0][2] == board[1][1] && board[1][1] == board[2][0])
@@ -85,13 +86,45 @@ class TicTacToe
             return false;
         }
     }
+
+    static boolean checkDraw()
+    {
+        for (int i = 0; i <= 2; i++)
+        {
+            for (int j = 0; j <= 2; j++)
+            {
+                if (board[i][j] == ' ')
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
 
-
-class HumanPlayer
+abstract class Player
 {
     String name;
     char mark;
+
+    abstract void makeMove();
+    boolean isValidMove(int row, int col)
+    {
+        if (row >= 0 && row <= 2 &&
+                col >= 0 && col <= 2)
+        {
+            if (TicTacToe.board[row][col] == ' ')
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+class HumanPlayer extends Player
+{
 
     HumanPlayer(String name, char mark)
     {
@@ -113,22 +146,71 @@ class HumanPlayer
         TicTacToe.placeMark(row,col,mark);
     }
 
-    boolean isValidMove(int row, int col)
+
+}
+
+class AiPlayer extends Player
+{
+    AiPlayer(String name, char mark)
     {
-        if (row >= 0 && row <= 2 && col >= 0 && col <= 3)
+        this.name = name;
+        this.mark = mark;
+    }
+
+    void makeMove()
+    {
+        Scanner sc = new Scanner(System.in);
+        int row,col;
+        do
         {
-            if (TicTacToe.board[row][col] == ' ')
-            {
-                return true;
-            }
-        }
-        return false;
+            Random r = new Random();
+            row = r.nextInt(3);
+            col = r.nextInt(3);
+        }while(!isValidMove(row,col));
+
+        TicTacToe.placeMark(row,col,mark);
     }
 }
 
-public class Main {
-    public static void main(String[] args) {
+public class Main
+{
+    public static void main(String[] args)
+    {
         TicTacToe t = new TicTacToe();
-        t.displayBoard();
+        TicTacToe.displayBoard();
+        HumanPlayer p1 = new HumanPlayer("Dufaux",'X');
+        AiPlayer p2 = new AiPlayer("Romeo",'O');
+        Player cp;
+        cp = p1;
+        while (true)
+        {
+            System.out.println(cp.name + " turn");
+            cp.makeMove();
+            TicTacToe.displayBoard();
+            System.out.println();
+
+            if (TicTacToe.checkColWin() || TicTacToe.checkRowWin() ||
+                    TicTacToe.checkDiagonalWin())
+            {
+                System.out.println(cp.name + " has Won 🎊🎊");
+                break;
+            }
+            else if (TicTacToe.checkDraw())
+            {
+                System.out.println("It's a Draw");
+                break;
+            }
+            else
+            {
+                if(cp == p1)
+                {
+                    cp = p2;
+                }
+                else
+                {
+                    cp = p1;
+                }
+            }
+        }
     }
 }
